@@ -1,0 +1,34 @@
+version: '3.1'
+
+# volumes:
+#   jenkins-home-master: {}
+#   jenkins-home-slave: {}
+
+networks:
+  jenkinsnetwork:
+    driver: bridge
+
+services:
+    jenkins:
+        container_name: jenkins-master
+        networks: 
+          - jenkinsnetwork
+        ports:
+            - '8080:8080'
+            - '50000:50000'
+        image: jenkins-master
+        volumes:
+            - /Users/aassuhendar/Applications/Docker-Volume/docker-compose/jenkins/home-jenkins-master:/var/jenkins_home
+    jenkins-slave:
+        container_name: jenkins-slave
+        networks: 
+          - jenkinsnetwork
+        restart: always
+        environment:
+            - 'JENKINS_URL=http://jenkins:8080'
+        image: jenkins-slave
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - /Users/aassuhendar/Applications/Docker-Volume/docker-compose/jenkins/home-jenkins-slave:/home/jenkins
+        depends_on:
+            - jenkins
